@@ -1,0 +1,26 @@
+# VSCode
+.vscode/**
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/c_cpp_properties.json
+
+# C编译产物
+build/
+Debug/
+Release/
+*.o
+*.exe
+*.elf
+*.hex
+*.bin
+
+# Python miniconda
+__pycache__/
+*.pyc
+venv/
+.env
+*.env
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
