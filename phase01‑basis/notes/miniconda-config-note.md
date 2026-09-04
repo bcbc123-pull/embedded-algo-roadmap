@@ -1,31 +1,23 @@
-# 如何配置miniconda
+# 如何配置 Miniconda
 
-## 1.下载miniconda
+## 1. 下载安装
 
-先到清华源下载miniconda，安装，勾选安装界面前三个选项
+- 从**清华源**下载 Miniconda 安装包，安装时勾选**界面提示的前三个选项**。
+- 安装后打开 **Anaconda Prompt**，输入 `conda` 回车，能输出帮助信息即安装成功。
 
-安装好后打开anaconda prompt，输入conda检查是否安装成功
+## 2. 更换 pip / conda 下载源
 
-## 2.更改pip和conda下载源
+将 pip 与 conda 的下载源改为**清华源**（清华源官网有详细教程），加速下载。
 
-更改pip和conda下载源为清华源，在清华源网站有详细教程
+## 3. 虚拟环境常用命令
 
-## 3.配置conda虚拟环境
+> 先打开 **Anaconda Prompt** 再执行以下命令。
 
-先安装一个虚拟环境版本的python，打开anaconda prompt
-
-输入代码：conda create -n “虚拟环境名字” python=3.11		//下载3.11版本python
-
-确定安装：y
-
-查看conda虚拟环境		代码：conda env list
-
-切换到新的虚拟环境		代码：conda activate “虚拟环境名字”
-
-退出虚拟环境				代码：exit
-
-删除虚拟环境				代码：conda env remove -n “虚拟环境名字”
-
-pip下载jieba				代码：pip install jieba
-
-下载python库				代码：pip install "库名称“
+| 操作 | 命令 |
+| ---- | ---- |
+| **创建环境**（指定 Python 版本） | `conda create -n "环境名" python=3.11` |
+| **查看所有环境** | `conda env list` |
+| **进入环境** | `conda activate "环境名"` |
+| **退出环境** | `exit` |
+| **删除环境** | `conda env remove -n "环境名"` |
+| **安装库**（以 jieba 为例） | `pip install jieba` |

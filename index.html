@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>嵌入式算法学习笔记</title>
+<style>
+:root {
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --border: #e5e7eb;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --accent: #4f46e5;
+  --accent-soft: #eef2ff;
+  --code-bg: #f1f5f9;
+  --warn-bg: #fffbeb;
+  --warn-border: #f59e0b;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.75;
+}
+
+/* ===== 侧边栏 ===== */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 270px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 24px 16px;
+}
+.sidebar h1 {
+  font-size: 17px;
+  margin: 0 0 4px;
+  color: var(--accent);
+}
+.sidebar .count {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+.nav-group { margin-bottom: 18px; }
+.nav-group-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  margin-bottom: 6px;
+  padding: 0 8px;
+}
+.nav-link {
+  display: block;
+  padding: 6px 8px;
+  font-size: 14px;
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 6px;
+}
+.nav-link:hover { background: var(--accent-soft); color: var(--accent); }
+
+/* ===== 内容区 ===== */
+.content {
+  margin-left: 270px;
+  padding: 40px 48px 80px;
+  max-width: 960px;
+}
+.note {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px 40px;
+  margin-bottom: 28px;
+}
+.note h1 {
+  margin-top: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 24px;
+}
+.note h2 { font-size: 20px; margin-top: 28px; }
+.note h3 { font-size: 16px; margin-top: 22px; color: var(--accent); }
+
+/* ===== 代码块与行内代码 ===== */
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+pre code { font-family: "SFMono-Regular", Consolas, "Courier New", monospace; }
+:not(pre) > code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: "SFMono-Regular", Consolas, "Courier New", monospace;
+  font-size: 0.9em;
+}
+
+/* ===== 表格 ===== */
+table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 14px; }
+th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+th { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+tr:nth-child(even) td { background: #fafafa; }
+
+/* ===== 引用块（重点/警告） ===== */
+blockquote {
+  margin: 16px 0;
+  padding: 10px 16px;
+  background: var(--warn-bg);
+  border-left: 4px solid var(--warn-border);
+  border-radius: 0 8px 8px 0;
+}
+blockquote p { margin: 0; }
+
+/* ===== 响应式 ===== */
+@media (max-width: 768px) {
+  .sidebar { position: static; width: auto; border-right: none; border-bottom: 1px solid var(--border); }
+  .content { margin-left: 0; padding: 20px 16px; }
+  .note { padding: 20px; }
+}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <h1>嵌入式算法学习笔记</h1>
+  <p class="count">6 篇笔记</p>
+<div class="nav-group">
+<div class="nav-group-title">phase01‑basis</div>
+<a class="nav-link" href="#note-0">Git fetch / pull / push 核心命令对比笔记</a>
+<a class="nav-link" href="#note-1">Git + VSCode 环境配置笔记</a>
+<a class="nav-link" href="#note-2">Git 从保存更改到完成推送完整操作笔记</a>
+<a class="nav-link" href="#note-3">Git VSCode 源代码管理面板操作笔记</a>
+<a class="nav-link" href="#note-4">如何配置 Miniconda</a>
+<a class="nav-link" href="#note-5">在 VSCode 中搭配 Miniconda 使用 Python</a>
+</div>
+</aside>
+<main class="content">
+<section class="note" id="note-0">
+<h1>Git fetch / pull / push 核心命令对比笔记</h1>
+<blockquote>
+<p>这三条命令是日常使用频率最高、也最容易混淆的 Git 核心指令。</p>
+</blockquote>
+<h2>一、一句话区分</h2>
+<ul>
+<li><strong>fetch</strong>：只下载、不改动、最安全（查看远程更新）</li>
+<li><strong>pull</strong>：下载 + 自动合并（更新本地代码）</li>
+<li><strong>push</strong>：上传本地代码到云端（同步本地更新到远程）</li>
+</ul>
+<h2>二、git fetch（推荐新手优先用）</h2>
+<p><strong>作用</strong>：从远程仓库<strong>只拉取最新提交信息</strong>，<strong>不修改本地文件、不合并代码</strong>。
+相当于：<strong>先看一眼网上更新了什么，不动自己的代码。</strong></p>
+<pre><code class="language-bash">git fetch
+</code></pre>
+<ul>
+<li>✅ 绝对安全，不会产生代码冲突</li>
+<li>✅ 只更新本地「远程镜像记录」</li>
+<li>❌ 不改动当前任何文件，也不自动合并</li>
+</ul>
+<h3>VSCode 自动 fetch 弹窗</h3>
+<p>VSCode 会询问「是否定期后台运行 git fetch？」。</p>
+<blockquote>
+<p><strong>单人仓库建议选「否」</strong>：只有自己开发，远程不会有他人更新，需要时手动 fetch 即可；多人协作可选「是」。</p>
+</blockquote>
+<h2>三、git pull（新手慎用）</h2>
+<blockquote>
+<p><strong>本质公式：git pull = git fetch + git merge</strong>（先下载远程代码，再自动合并到本地当前分支）</p>
+</blockquote>
+<p><strong>风险</strong>：
+- 容易产生<strong>代码冲突</strong>
+- 自动合并，无法预览差异</p>
+<p><strong>使用场景</strong>：确认远程代码干净、想直接更新本地时使用。</p>
+<h2>四、git push（上传代码）</h2>
+<p><strong>作用</strong>：把<strong>本地已 commit 的版本</strong>上传同步到远程仓库，只上传、不下载。</p>
+<pre><code class="language-bash">git push
+</code></pre>
+<h2>五、三者终极对比表（背诵版）</h2>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>动作</th>
+<th>是否改本地文件</th>
+<th>安全性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fetch</td>
+<td>只下载信息，不合并代码</td>
+<td>否</td>
+<td><strong>最高</strong>（推荐新手）</td>
+</tr>
+<tr>
+<td>pull</td>
+<td>下载远程代码 + 自动合并到本地</td>
+<td>是</td>
+<td>一般，极易冲突，新手慎用</td>
+</tr>
+<tr>
+<td>push</td>
+<td>上传本地 commit 到远程仓库</td>
+<td>否</td>
+<td>安全，单人开发常用</td>
+</tr>
+</tbody>
+</table>
+<h2>六、个人开发固定流程</h2>
+<blockquote>
+<p><strong>写代码 → 暂存 → 提交(commit) → 推送(push)</strong></p>
+</blockquote>
+<p><strong>单人仓库几乎不需要 pull，也不用频繁 fetch。</strong></p>
+<h2>七、易错点总结</h2>
+<ul>
+<li><strong>commit 只是保存本地版本，不是上传</strong></li>
+<li><strong>push 才是真正上传到云端仓库</strong></li>
+<li><strong>fetch 只刷新状态，永远不会弄坏代码</strong></li>
+<li><strong>VSCode 底部双向同步按钮是 pull，新手尽量不点</strong></li>
+</ul>
+</section>
+
+<section class="note" id="note-1">
+<h1>Git + VSCode 环境配置笔记</h1>
+<h2>1. .gitignore 的作用</h2>
+<p>告诉 Git 哪些文件<strong>不要提交到远程仓库</strong>。</p>
+<h3>语法规则</h3>
+<table>
+<thead>
+<tr>
+<th>写法</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>文件夹名/</code></td>
+<td>忽略整个文件夹</td>
+</tr>
+<tr>
+<td><code>**</code></td>
+<td>文件夹下所有内容</td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>取反（例外），重新纳入版本管理</td>
+</tr>
+</tbody>
+</table>
+<h3>配置示例</h3>
+<pre><code class="language-gitignore"># VSCode 本地机器专属文件，不上传仓库
+.vscode/**
+# 但以下三份工程配置要提交进仓库
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/c_cpp_properties.json
+
+# C 编译产物
+build/
+Debug/
+Release/
+*.o
+*.exe
+*.elf
+*.hex
+*.bin
+
+# Python 运行缓存
+__pycache__/
+*.pyc
+venv/
+
+# 密钥、密码等环境变量文件，禁止上传，防止泄露
+.env
+*.env
+
+# 系统垃圾
+Thumbs.db
+</code></pre>
+<blockquote>
+<p><strong>为什么三个 <code>.vscode</code> json 要提交？</strong> 它们是工程配置：tasks=编译任务、launch=F5 调试、c_cpp_properties=C/C++ 头文件与智能提示。属于项目配置而非个人设置。</p>
+</blockquote>
+<h2>2. VSCode、MinGW、Miniconda 各自职责</h2>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VSCode</strong></td>
+<td>编辑器操作台：写代码、调试、Git 操作；<strong>不自带 C 编译器，也不自带 Python 解释器</strong></td>
+</tr>
+<tr>
+<td><strong>MinGW-w64 (gcc/g++)</strong></td>
+<td>负责编译、运行 C 语言 PC 程序</td>
+</tr>
+<tr>
+<td><strong>Miniconda</strong></td>
+<td>管理 Python 解释器、虚拟环境、算法库；VSCode 只负责调用 conda 里的 <code>python.exe</code></td>
+</tr>
+</tbody>
+</table>
+<h2>3. 仓库提交原则</h2>
+<ul>
+<li>✅ <strong>需要提交</strong>：源码 <code>.c</code> <code>.py</code>、笔记 <code>.md</code>、工程配置 json</li>
+<li>❌ <strong>不要提交</strong>：编译产物、运行缓存、本机 IDE 个人设置、二进制固件、虚拟环境本体</li>
+</ul>
+</section>
+
+<section class="note" id="note-2">
+<h1>Git 从保存更改到完成推送完整操作笔记</h1>
+<h2>1. 三个关键概念</h2>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>含义</th>
+<th>存储位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>暂存 (stage)</strong></td>
+<td>挑选要提交的文件</td>
+<td><code>.git/index</code>，关 VSCode 不丢失</td>
+</tr>
+<tr>
+<td><strong>commit (本地提交)</strong></td>
+<td>把暂存文件生成一个版本记录</td>
+<td>只在本机，网页仓库看不到</td>
+</tr>
+<tr>
+<td><strong>push (推送)</strong></td>
+<td>把本地 commit 上传到远程仓库</td>
+<td>GitHub/Gitee 云端</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>流程：<strong>本地文件修改 → 文件+暂存 → 生成本地 commit → push 推送远程。</strong></p>
+</blockquote>
+<h2>2. 现象：空消息点提交，弹出 COMMIT_EDITMSG</h2>
+<p><strong>触发条件</strong>：VSCode 源代码管理顶部输入框为空，直接点【提交】按钮。
+Git 会打开内部临时文件 <code>.git/COMMIT_EDITMSG</code> 要求填写提交信息，同时顶部输入框被锁为只读。</p>
+<blockquote>
+<p>⚠️ <code>.git/COMMIT_EDITMSG</code> 属于 Git 内部临时文件，<strong>禁止提交到仓库</strong>。</p>
+</blockquote>
+<h3>方法一：编辑 COMMIT_EDITMSG 完成本地 commit</h3>
+<ol>
+<li>打开 <code>.git/COMMIT_EDITMSG</code> 文件。</li>
+<li><strong>第一行写入提交信息</strong>；<code>#</code> 开头的注释行保留即可，Git 会自动忽略。
+   示例：<code>docs (phase01): 新增 git 全套操作学习笔记</code></li>
+<li><code>Ctrl+S</code> 保存。</li>
+<li>关闭标签页，Git 读取文件自动执行本地 commit。
+   <strong>成功判断</strong>：更改列表文件全部消失，Git 历史面板出现本次提交记录。</li>
+</ol>
+<blockquote>
+<p>⚠️ Windows 下 <code>.git</code> 目录文件可能只读无法保存，则改用方法二。</p>
+</blockquote>
+<h3>方法二：终端命令完成 commit（推荐，规避只读弹窗）</h3>
+<p>文件已提前暂存，无需重新暂存。打开 VSCode 内置终端，在仓库根目录执行：</p>
+<pre><code class="language-bash">git commit -m &quot;docs(phase01): 新增git全套操作学习笔记&quot;
+</code></pre>
+<p>执行成功即完成本地 commit。</p>
+<h2>3. 本地 commit 之后：推送 Push</h2>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>图形界面</td>
+<td>源代码管理面板右上角 <code>...</code> → <code>Push</code></td>
+</tr>
+<tr>
+<td>终端</td>
+<td><code>git push</code></td>
+</tr>
+</tbody>
+</table>
+<h3>推送弹出 GitHub Sign in 登录弹窗</h3>
+<ol>
+<li>选择 <code>Browser/Device</code> 标签，点 <code>Sign in with your browser</code>。</li>
+<li>浏览器登录 GitHub 并授权 VSCode。</li>
+<li>返回 VSCode，弹窗自动关闭，推送继续。</li>
+</ol>
+<blockquote>
+<p>授权成功后 VSCode 会缓存凭据，后续推送不再弹窗；Token 选项为高级手动模式，新手忽略。</p>
+</blockquote>
+<h2>4. 如何判断执行结果</h2>
+<ul>
+<li><strong>本地 commit 成功</strong>：Git 历史图表出现提交记录，更改列表文件消失。<blockquote>
+<p>⚠️ <strong>出现提交记录 ≠ 推送成功</strong>，断网也能生成本地 commit。</p>
+</blockquote>
+</li>
+<li><strong>推送真正成功</strong>：网页仓库刷新后能看到新增文件；VSCode 底部状态栏分支显示 <code>0↑ 0↓</code>。</li>
+</ul>
+<h2>5. 根治配置：彻底禁用 COMMIT_EDITMSG 弹窗</h2>
+<p><code>Ctrl+Shift+P</code> →「首选项：打开设置 (JSON)」，添加：</p>
+<pre><code class="language-json">&quot;git.useEditorAsCommitInput&quot;: false
+</code></pre>
+<p>保存并重载 VSCode 窗口。</p>
+<blockquote>
+<p>作用：不再唤起 COMMIT_EDITMSG 编辑模式，强制使用顶部输入框填写提交消息；空消息点提交直接报错，不会锁输入框。</p>
+</blockquote>
+<h2>6. 踩坑记录</h2>
+<ol>
+<li><strong>COMMIT_EDITMSG 空白直接关标签页</strong>：本次提交作废，临时文件销毁，不生成 commit，文件回到暂存前状态（标签消失 ≠ 提交成功）。</li>
+<li><strong><code>.git</code> 文件夹是 Git 内部数据库</strong>，绝对不要修改、提交其中任何文件。</li>
+<li><strong>提交 ≠ 推送</strong>：提交保存在本机，推送才同步云端。</li>
+</ol>
+</section>
+
+<section class="note" id="note-3">
+<h1>Git VSCode 源代码管理面板操作笔记</h1>
+<h2>1. 文件状态标记</h2>
+<table>
+<thead>
+<tr>
+<th>标记</th>
+<th>含义</th>
+<th>是否上传云端</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>U</strong> Untracked</td>
+<td>新建未跟踪文件</td>
+<td>否</td>
+</tr>
+<tr>
+<td><strong>A</strong> Added</td>
+<td>已暂存的新增文件</td>
+<td>否（还未推送）</td>
+</tr>
+<tr>
+<td><strong>M</strong> Modified</td>
+<td>文件被修改</td>
+<td>否</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>U 只代表「Git 已发现但还没纳入版本管理」</strong>，仅出现在更改列表里，不等于已经上传仓库。</p>
+</blockquote>
+<h2>2. Git 完整工作流程（图形界面）</h2>
+<blockquote>
+<p><strong>完整链路：本地新建文件 → 暂存(stage) → 提交(commit，本地保存) → 推送(push，上传远程云端)</strong></p>
+</blockquote>
+<ol>
+<li><strong>暂存（Stage）</strong>：点击文件右侧 <code>+</code> 加号加入暂存区；或点更改栏顶部加号一次性暂存全部。<blockquote>
+<p>作用：<strong>挑选哪些文件准备记录到版本库。</strong></p>
+</blockquote>
+</li>
+<li><strong>填写提交消息</strong>：顶部输入框写规范提交说明。
+   - <code>docs</code>：文档/笔记更新
+   - <code>feat</code>：新增代码、demo 功能
+   - <code>fix</code>：修复 bug
+   - 示例：<code>docs(phase01): 添加git、miniconda、vscode配置学习笔记</code></li>
+<li><strong>点击【提交】</strong>：执行 commit，<strong>仅保存在本机本地 Git 仓库</strong>，网页仓库此时看不到。</li>
+<li><strong>点击【推送】</strong>：把本地 commit 同步上传到远程云端仓库。</li>
+</ol>
+<blockquote>
+<p>⚠️ <strong>重点：只提交不推送，修改只存在本机，网页仓库无更新。</strong></p>
+</blockquote>
+<h2>3. 仓库提交原则回顾</h2>
+<ul>
+<li>✅ <strong>需要提交</strong>：源码 <code>.c</code>/<code>.py</code>/<code>.ipynb</code>、<code>.md</code> 笔记、工程配置 json、<code>.gitkeep</code> 空文件夹占位文件</li>
+<li>❌ <strong>不要提交</strong>：编译产物 exe/elf/hex、<code>__pycache__</code> 缓存、IDE 本地个人设置、系统垃圾文件、虚拟环境本体</li>
+</ul>
+<h2>4. 实操流程</h2>
+<p>场景：新增一批学习笔记</p>
+<ol>
+<li>资源管理器新建若干 <code>.md</code> 文件</li>
+<li>左侧源代码管理面板出现大量 <strong>U</strong> 标记</li>
+<li>点击全部暂存加号</li>
+<li>填写提交信息</li>
+<li>点击【提交】</li>
+<li>点击【推送】</li>
+<li>刷新网页仓库验证文件已出现</li>
+</ol>
+<h2>5. 踩坑记录</h2>
+<ol>
+<li><strong>只点提交、忘记推送</strong>：文件只保存在自己电脑，网页看不到。</li>
+<li><strong><code>.gitignore</code> 只对未跟踪的新文件生效</strong>：已经提交过的文件，修改 gitignore 不会自动删除。</li>
+<li><strong><code>.gitkeep</code> 占位</strong>：Git 不跟踪空文件夹，放一个空白 <code>.gitkeep</code> 文件用于保留目录结构、上传空目录。</li>
+</ol>
+</section>
+
+<section class="note" id="note-4">
+<h1>如何配置 Miniconda</h1>
+<h2>1. 下载安装</h2>
+<ul>
+<li>从<strong>清华源</strong>下载 Miniconda 安装包，安装时勾选<strong>界面提示的前三个选项</strong>。</li>
+<li>安装后打开 <strong>Anaconda Prompt</strong>，输入 <code>conda</code> 回车，能输出帮助信息即安装成功。</li>
+</ul>
+<h2>2. 更换 pip / conda 下载源</h2>
+<p>将 pip 与 conda 的下载源改为<strong>清华源</strong>（清华源官网有详细教程），加速下载。</p>
+<h2>3. 虚拟环境常用命令</h2>
+<blockquote>
+<p>先打开 <strong>Anaconda Prompt</strong> 再执行以下命令。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>创建环境</strong>（指定 Python 版本）</td>
+<td><code>conda create -n "环境名" python=3.11</code></td>
+</tr>
+<tr>
+<td><strong>查看所有环境</strong></td>
+<td><code>conda env list</code></td>
+</tr>
+<tr>
+<td><strong>进入环境</strong></td>
+<td><code>conda activate "环境名"</code></td>
+</tr>
+<tr>
+<td><strong>退出环境</strong></td>
+<td><code>exit</code></td>
+</tr>
+<tr>
+<td><strong>删除环境</strong></td>
+<td><code>conda env remove -n "环境名"</code></td>
+</tr>
+<tr>
+<td><strong>安装库</strong>（以 jieba 为例）</td>
+<td><code>pip install jieba</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section class="note" id="note-5">
+<h1>在 VSCode 中搭配 Miniconda 使用 Python</h1>
+<h2>1. 安装插件</h2>
+<p>在插件商店搜索并安装 <strong>Python</strong> 和 <strong>Jupyter</strong> 两个插件。</p>
+<h2>2. 准备 Python 环境</h2>
+<p>需先在 Miniconda 中安装一个 Python 环境（见 <a href="miniconda-config-note.md">miniconda-config-note</a>）。</p>
+<h2>3. 新建 .ipynb 文件</h2>
+<p>新建一个后缀为 <code>.ipynb</code> 的文件，用 VSCode 打开即可编写并运行 Python。</p>
+<blockquote>
+<p>说明：<code>.ipynb</code> 是 Jupyter Notebook 文件，适合边写边运行、查看中间结果。</p>
+</blockquote>
+</section>
+</main>
+</body>
+</html>

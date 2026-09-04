@@ -1,13 +1,15 @@
-# 如何在VScode中搭配miniconda使用python
+# 在 VSCode 中搭配 Miniconda 使用 Python
 
-## 1.安装插件
+## 1. 安装插件
 
-安装python和jupyter插件，在插件商店直接搜就可以
+在插件商店搜索并安装 **Python** 和 **Jupyter** 两个插件。
 
-## 2.需要在miniconda中安装一个python环境
+## 2. 准备 Python 环境
 
-在miniconda-config中有介绍
+需先在 Miniconda 中安装一个 Python 环境（见 [miniconda-config-note](miniconda-config-note.md)）。
 
-## 3.新建一个后缀为.ipynb的文件
+## 3. 新建 .ipynb 文件
 
-然后用vscode打开即可
+新建一个后缀为 `.ipynb` 的文件，用 VSCode 打开即可编写并运行 Python。
+
+> 说明：`.ipynb` 是 Jupyter Notebook 文件，适合边写边运行、查看中间结果。
